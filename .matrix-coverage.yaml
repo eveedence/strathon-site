@@ -1,0 +1,3 @@
+version: 1
+matrix_ref: .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml
+files: {}  # Populated per PR as public files are added
