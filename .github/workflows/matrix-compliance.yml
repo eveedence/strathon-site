@@ -1,0 +1,207 @@
+name: matrix-compliance
+
+# Phase 34.2-W1 Task 1.4 — Disclosure-boundary matrix CI enforcement.
+# Three checks per D-17:
+#   1. denylist-regex   — scan public-bound paths for forbidden patterns
+#   2. attestation-check — PR body must carry "Matrix: <sha>#<section-id>"
+#   3. coverage-check    — new public files must appear in .matrix-coverage.yaml
+#
+# Source of truth for the matrix YAML is eveedence/strathon-core. Downstream
+# public repos fetch it via MATRIX_READ_TOKEN (fine-grained PAT, Contents:read).
+# Honors denylist_scope.exempt_surfaces per DEC-IP-02 (ec6066b).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  denylist-regex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Fetch matrix YAML from source-of-truth (strathon-core)
+        env:
+          GH_TOKEN: ${{ secrets.MATRIX_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -f ".planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml" ]; then
+            echo "Using local matrix (this is strathon-core)"
+            cp .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml /tmp/matrix.yaml
+          else
+            echo "Fetching matrix from eveedence/strathon-core via MATRIX_READ_TOKEN"
+            if ! gh api repos/eveedence/strathon-core/contents/.planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml \
+              --jq '.content' 2>/tmp/matrix-fetch-err.txt | base64 -d > /tmp/matrix.yaml; then
+              if grep -qE '401|403|credentials|Bad credentials|Resource not accessible' /tmp/matrix-fetch-err.txt 2>/dev/null; then
+                echo '::error::MATRIX_READ_TOKEN auth failure — secret missing, expired, or lacks Contents:read scope on eveedence/strathon-core'
+                cat /tmp/matrix-fetch-err.txt
+              else
+                echo '::error::Failed to fetch matrix YAML'
+                cat /tmp/matrix-fetch-err.txt
+              fi
+              exit 1
+            fi
+          fi
+          echo "Matrix fetched ($(wc -l < /tmp/matrix.yaml) lines)"
+
+      - name: Extract denylist regex patterns
+        run: |
+          set -euo pipefail
+          yq '.denylist_regex[].pattern' /tmp/matrix.yaml > /tmp/denylist-patterns.txt
+          echo "Loaded $(wc -l < /tmp/denylist-patterns.txt) denylist patterns:"
+          cat /tmp/denylist-patterns.txt
+
+      - name: Extract exempt_surfaces globs (DEC-IP-02)
+        run: |
+          set -euo pipefail
+          yq '.denylist_scope.exempt_surfaces[].paths[]' /tmp/matrix.yaml 2>/dev/null > /tmp/exempt-globs.txt || true
+          # Strip surrounding quotes yq emits
+          sed -i 's/^"//; s/"$//' /tmp/exempt-globs.txt
+          echo "Exempt surface globs:"
+          cat /tmp/exempt-globs.txt || echo "(none)"
+
+      - name: Compute changed files
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin main --depth=1 || true
+            git diff --name-only origin/main...HEAD > /tmp/changed-files.txt
+          else
+            git ls-files > /tmp/changed-files.txt
+          fi
+          echo "Changed files: $(wc -l < /tmp/changed-files.txt)"
+
+      - name: Filter to public-bound paths
+        run: |
+          set -euo pipefail
+          # Public-bound paths that ship externally.
+          grep -E "^(README\.md|LICENSE|test-vectors/|content/|public/|docs/.*\.md|EVDNCE-STANDARD\.md)" \
+            /tmp/changed-files.txt > /tmp/public-paths.txt || true
+          echo "Public-bound candidates: $(wc -l < /tmp/public-paths.txt)"
+          cat /tmp/public-paths.txt || true
+
+      - name: Apply exempt_surfaces filter (DEC-IP-02)
+        run: |
+          set -euo pipefail
+          # Drop files matching any exempt glob.
+          if [ ! -s /tmp/exempt-globs.txt ]; then
+            cp /tmp/public-paths.txt /tmp/scan-paths.txt
+          else
+            : > /tmp/scan-paths.txt
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              exempt=0
+              while IFS= read -r glob; do
+                [ -z "$glob" ] && continue
+                # Convert a glob like `.planning/research/arxiv-drafts/**` into a bash pattern match.
+                # Strip trailing /** and require prefix match; trailing /* requires one-segment deeper.
+                prefix="${glob%/**}"
+                if [ "$prefix" != "$glob" ]; then
+                  case "$file" in
+                    "$prefix"/*) exempt=1; break ;;
+                    "$prefix") exempt=1; break ;;
+                  esac
+                else
+                  case "$file" in
+                    $glob) exempt=1; break ;;
+                  esac
+                fi
+              done < /tmp/exempt-globs.txt
+              if [ "$exempt" -eq 1 ]; then
+                echo "EXEMPT (DEC-IP-02): $file"
+              else
+                echo "$file" >> /tmp/scan-paths.txt
+              fi
+            done < /tmp/public-paths.txt
+          fi
+          echo "Files to scan after exempt filter: $(wc -l < /tmp/scan-paths.txt)"
+
+      - name: Scan for denylist hits
+        run: |
+          set -euo pipefail
+          violations=0
+          while IFS= read -r pattern; do
+            [ -z "$pattern" ] && continue
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              [ -f "$file" ] || continue
+              if grep -iE "$pattern" "$file" > /tmp/hit.txt 2>/dev/null; then
+                echo "::error file=$file::Denylist hit: pattern '$pattern'"
+                cat /tmp/hit.txt
+                violations=$((violations+1))
+              fi
+            done < /tmp/scan-paths.txt
+          done < /tmp/denylist-patterns.txt
+          if [ "$violations" -gt 0 ]; then
+            echo "::error::Matrix denylist violations: $violations"
+            exit 1
+          fi
+          echo "No denylist violations."
+
+  attestation-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR body contains Matrix attestation
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+          if ! echo "$PR_BODY" | grep -qE '^Matrix:[[:space:]]+[a-f0-9]{7,40}#[a-z0-9_-]+'; then
+            echo "::error::PR body must contain 'Matrix: <sha>#<section-id>' line (per D-17)"
+            exit 1
+          fi
+          sha=$(echo "$PR_BODY" | grep -oE 'Matrix:[[:space:]]+[a-f0-9]{7,40}' | awk '{print $2}' | head -1)
+          section=$(echo "$PR_BODY" | grep -oE 'Matrix:[[:space:]]+[a-f0-9]{7,40}#[a-z0-9_-]+' | awk -F'#' '{print $2}' | head -1)
+          echo "Attested SHA: $sha"
+          echo "Attested section: $section"
+
+  coverage-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+      - name: Verify new public-bound files appear in .matrix-coverage.yaml
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=1 || true
+          git diff --name-only --diff-filter=A origin/main...HEAD \
+            | grep -E "^(content/|public/|test-vectors/|README\.md|LICENSE)" > /tmp/new-public.txt || true
+          if [ ! -s /tmp/new-public.txt ]; then
+            echo "No new public-bound files — coverage check skipped."
+            exit 0
+          fi
+          if [ ! -f .matrix-coverage.yaml ]; then
+            echo "::error::.matrix-coverage.yaml missing but new public files added"
+            cat /tmp/new-public.txt
+            exit 1
+          fi
+          missing=0
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            if ! yq ".files.\"$path\".matrix_id" .matrix-coverage.yaml 2>/dev/null | grep -qv '^null$'; then
+              echo "::error::New public file $path missing from .matrix-coverage.yaml"
+              missing=$((missing+1))
+            fi
+          done < /tmp/new-public.txt
+          if [ "$missing" -gt 0 ]; then
+            exit 1
+          fi
+          echo "All new public files covered."
