@@ -31,29 +31,43 @@ jobs:
           sudo chmod +x /usr/local/bin/yq
           yq --version
 
-      - name: Fetch matrix YAML from source-of-truth (strathon-core)
+      - name: Fetch matrix YAML from source-of-truth
         env:
           GH_TOKEN: ${{ secrets.MATRIX_READ_TOKEN }}
         run: |
           set -euo pipefail
+          # Source-of-truth path: .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml
+          # Order of precedence: local checkout > eveedence/strathon-core > eveedence/evdnce.
+          # (During Phase 34.2 rebrand, matrix currently lives in eveedence/evdnce; post-W3
+          # it migrates to eveedence/strathon-core. This workflow tolerates both.)
           if [ -f ".planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml" ]; then
-            echo "Using local matrix (this is strathon-core)"
+            echo "Using local matrix checkout"
             cp .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml /tmp/matrix.yaml
           else
-            echo "Fetching matrix from eveedence/strathon-core via MATRIX_READ_TOKEN"
-            if ! gh api repos/eveedence/strathon-core/contents/.planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml \
-              --jq '.content' 2>/tmp/matrix-fetch-err.txt | base64 -d > /tmp/matrix.yaml; then
+            fetched=0
+            for src in eveedence/strathon-core eveedence/evdnce; do
+              echo "Trying source $src via MATRIX_READ_TOKEN..."
+              if gh api "repos/$src/contents/.planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml" \
+                --jq '.content' 2>/tmp/matrix-fetch-err.txt | base64 -d > /tmp/matrix.yaml 2>/dev/null; then
+                if [ -s /tmp/matrix.yaml ]; then
+                  echo "Matrix fetched from $src"
+                  fetched=1
+                  break
+                fi
+              fi
+              echo "Source $src failed:"
+              cat /tmp/matrix-fetch-err.txt || true
+            done
+            if [ "$fetched" -ne 1 ]; then
               if grep -qE '401|403|credentials|Bad credentials|Resource not accessible' /tmp/matrix-fetch-err.txt 2>/dev/null; then
-                echo '::error::MATRIX_READ_TOKEN auth failure — secret missing, expired, or lacks Contents:read scope on eveedence/strathon-core'
-                cat /tmp/matrix-fetch-err.txt
+                echo '::error::MATRIX_READ_TOKEN auth failure — secret missing, expired, or lacks Contents:read scope on source-of-truth repo'
               else
-                echo '::error::Failed to fetch matrix YAML'
-                cat /tmp/matrix-fetch-err.txt
+                echo '::error::Failed to fetch matrix YAML from any source-of-truth'
               fi
               exit 1
             fi
           fi
-          echo "Matrix fetched ($(wc -l < /tmp/matrix.yaml) lines)"
+          echo "Matrix size: $(wc -l < /tmp/matrix.yaml) lines"
 
       - name: Extract denylist regex patterns
         run: |
