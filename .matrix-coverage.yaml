@@ -1,3 +1,63 @@
 version: 1
 matrix_ref: .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml
-files: {}  # Populated per PR as public files are added
+files:
+  ".github/workflows/site-validation.yml":
+    matrix_id: CODE-DESIGN-SYSTEM
+  ".gitignore":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "README.md":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "app/custo-da-prova/page.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "app/design-system/page.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "app/globals.css":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "app/layout.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "app/page.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/PUBLICATION-REVIEW.md":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/README.md":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/browser-report.json":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/components.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/contrast-report.json":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/copy.ts":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/eveedence.css":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/generate-tokens.mjs":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/guide.tsx":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/index.ts":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/tokens.css":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "design-system/tokens.json":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "next.config.mjs":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "package.json":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "pnpm-lock.yaml":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "postcss.config.mjs":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "public/brand/eveedence-logotipo.svg":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "public/brand/fonts/Geist-Variable.woff2":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "public/brand/fonts/GeistMono-Variable.woff2":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "public/brand/fonts/OFL.txt":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "public/design-system.html":
+    matrix_id: CODE-DESIGN-SYSTEM
+  "tsconfig.json":
+    matrix_id: CODE-DESIGN-SYSTEM

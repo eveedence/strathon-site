@@ -1,0 +1,21 @@
+name: site-validation
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: node design-system/generate-tokens.mjs
+      - run: git diff --exit-code -- design-system/tokens.css design-system/contrast-report.json
+      - run: pnpm exec tsc --noEmit
+      - run: pnpm build

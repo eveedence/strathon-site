@@ -1,0 +1,393 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+:root {
+  /* Brand — red sampled from strathon-logo.png (#E60011) */
+  --st-brand: #e60011;
+  --st-brand-foreground: #ffffff;
+  --st-brand-muted: #fde7e8;
+  --st-brand-border: #f4abb0;
+
+  /* Interactive
+     Primary = Strathon red for commercial CTA; --st-action = off-black
+     for dense dashboard surfaces where red would become noise.
+     Focus ring is the off-black ink reference, not the brand. */
+  --st-primary: #e60011;
+  --st-primary-foreground: #ffffff;
+  --st-primary-hover: #c9000f;
+  --st-primary-active: #a3000c;
+  --st-action: #111315;
+  --st-action-foreground: #fafaf9;
+  --st-action-hover: #1f2225;
+  --st-action-active: #050607;
+  --st-focus-ring: #111315;
+
+  /* Neutral · light — off-white canvas, off-black ink (never pure) */
+  --st-background: #fafaf9;
+  --st-foreground: #111315;
+  --st-canvas-deep: #0a0b0c;
+  --st-surface: #ffffff;
+  --st-surface-subtle: #f5f5f4;
+  --st-surface-raised: #ffffff;
+  --st-border: #e5e5e3;
+  --st-border-strong: #c9c9c5;
+  --st-muted: #f5f5f4;
+  --st-muted-foreground: #57575a;
+
+  /* Semantic */
+  --st-success: #047857;
+  --st-success-foreground: #ffffff;
+  --st-warning: #b45309;
+  --st-warning-foreground: #ffffff;
+  --st-danger: #b91c1c;
+  --st-danger-foreground: #ffffff;
+  --st-info: #0369a1;
+  --st-info-foreground: #ffffff;
+
+  /* Evidence status — full sets w/ bg + border + fg */
+  --st-status-final: #047857;
+  --st-status-final-bg: #d1fae5;
+  --st-status-final-border: #6ee7b7;
+
+  --st-status-verified: #047857;
+  --st-status-verified-bg: #d1fae5;
+  --st-status-verified-border: #6ee7b7;
+
+  --st-status-pending: #b45309;
+  --st-status-pending-bg: #fef3c7;
+  --st-status-pending-border: #fcd34d;
+
+  --st-status-degraded: #c2410c;
+  --st-status-degraded-bg: #fed7aa;
+  --st-status-degraded-border: #fdba74;
+
+  --st-status-failed: #b91c1c;
+  --st-status-failed-bg: #fee2e2;
+  --st-status-failed-border: #fca5a5;
+
+  --st-status-expired: #475569;
+  --st-status-expired-bg: #e2e8f0;
+  --st-status-expired-border: #cbd5e1;
+
+  --st-status-erased: #6b21a8;
+  --st-status-erased-bg: #ede9fe;
+  --st-status-erased-border: #c4b5fd;
+
+  --st-status-exported: #0369a1;
+  --st-status-exported-bg: #e0f2fe;
+  --st-status-exported-border: #7dd3fc;
+
+  --st-status-unverified: #6b7280;
+  --st-status-unverified-bg: #f3f4f6;
+  --st-status-unverified-border: #d1d5db;
+
+  --st-status-open: #475569;
+  --st-status-open-bg: #f1f5f9;
+  --st-status-open-border: #cbd5e1;
+
+  --st-status-anchored: #0e7490;
+  --st-status-anchored-bg: #cffafe;
+  --st-status-anchored-border: #67e8f9;
+
+  --st-status-sealed: #4338ca;
+  --st-status-sealed-bg: #e0e7ff;
+  --st-status-sealed-border: #a5b4fc;
+
+  --st-status-revoked: #be185d;
+  --st-status-revoked-bg: #fce7f3;
+  --st-status-revoked-border: #f9a8d4;
+
+  --st-status-tampered: #991b1b;
+  --st-status-tampered-bg: #fef2f2;
+  --st-status-tampered-border: #f87171;
+
+  /* Regulatory mapping */
+  --st-regulatory-lgpd: #047857;
+  --st-regulatory-bacen: #1d4ed8;
+  --st-regulatory-susep: #6d28d9;
+  --st-regulatory-ai-governance: #4338ca;
+  --st-regulatory-security: #b91c1c;
+  --st-regulatory-privacy: #0e7490;
+
+  /* Charts — distinct from semantic; blue stays useful here as
+     categorical series, never as Strathon primary identity */
+  --st-chart-1: #111315;
+  --st-chart-2: #0f766e;
+  --st-chart-3: #d97706;
+  --st-chart-4: #1d4ed8;
+  --st-chart-5: #7c3aed;
+  --st-chart-grid: #e5e5e3;
+  --st-chart-axis: #57575a;
+  --st-chart-tooltip: #111315;
+
+  /* Typography — three layers, four functional tokens */
+  --st-font-counsel-display: "Source Serif 4", "Faculty Glyphic", "Instrument Serif", "Newsreader", Georgia, "Times New Roman", serif;
+  --st-font-counsel-text: "Newsreader", "Source Serif 4", Georgia, "Times New Roman", serif;
+  --st-font-counsel: var(--st-font-counsel-display);
+  --st-font-sans: var(--font-geist-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --st-font-heading: var(--font-geist-sans), "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --st-font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  --st-text-display: 56px;
+  --st-text-h1: 40px;
+  --st-text-h2: 28px;
+  --st-text-h3: 20px;
+  --st-text-title: 18px;
+  --st-text-body: 15px;
+  --st-text-body-sm: 13px;
+  --st-text-caption: 12px;
+  --st-text-metric-xl: 48px;
+  --st-text-metric-lg: 32px;
+  --st-text-label: 11px;
+
+  --st-text-counsel-display: 64px;
+  --st-text-counsel-headline: 44px;
+  --st-text-counsel-subhead: 28px;
+
+  --st-leading-body: 1.55;
+  --st-leading-tight: 1.18;
+  --st-leading-display: 1.05;
+  --st-leading-counsel-display: 0.96;
+  --st-leading-counsel-headline: 1.05;
+  --st-leading-counsel-subhead: 1.2;
+  --st-tracking-default: 0;
+  --st-tracking-label: 0.08em;
+  --st-tracking-counsel: 0;
+
+  /* Spacing (4px base) */
+  --st-space-0: 0;
+  --st-space-1: 4px;
+  --st-space-2: 8px;
+  --st-space-3: 12px;
+  --st-space-4: 16px;
+  --st-space-5: 20px;
+  --st-space-6: 24px;
+  --st-space-8: 32px;
+  --st-space-10: 40px;
+  --st-space-12: 48px;
+  --st-space-16: 64px;
+  --st-space-20: 80px;
+  --st-space-24: 96px;
+
+  /* Radius */
+  --st-radius-control: 6px;
+  --st-radius-card: 8px;
+  --st-radius-shell: 12px;
+  --st-radius-pill: 9999px;
+
+  /* Shadow / elevation — restrained, borders before blur */
+  --st-shadow-none: none;
+  --st-shadow-xs: 0 1px 0 rgba(17, 19, 21, 0.04);
+  --st-shadow-sm: 0 1px 2px rgba(17, 19, 21, 0.06), 0 1px 1px rgba(17, 19, 21, 0.04);
+  --st-shadow-md: 0 4px 12px rgba(17, 19, 21, 0.08), 0 2px 4px rgba(17, 19, 21, 0.04);
+  --st-shadow-overlay: 0 12px 32px rgba(17, 19, 21, 0.16), 0 4px 12px rgba(17, 19, 21, 0.08);
+
+  /* Motion */
+  --st-duration-fast: 100ms;
+  --st-duration-base: 160ms;
+  --st-duration-slow: 240ms;
+  --st-ease-standard: cubic-bezier(0.2, 0.6, 0.2, 1);
+
+  /* Layout */
+  --st-container-max: 1280px;
+  --st-sidebar-w: 248px;
+
+  /* shadcn / Tailwind compatibility aliases */
+  --background: var(--st-background);
+  --foreground: var(--st-foreground);
+  --card: var(--st-surface);
+  --card-foreground: var(--st-foreground);
+  --popover: var(--st-surface);
+  --popover-foreground: var(--st-foreground);
+  --primary: var(--st-primary);
+  --primary-foreground: var(--st-primary-foreground);
+  --secondary: var(--st-muted);
+  --secondary-foreground: var(--st-foreground);
+  --muted: var(--st-muted);
+  --muted-foreground: var(--st-muted-foreground);
+  --accent: var(--st-muted);
+  --accent-foreground: var(--st-foreground);
+  --destructive: var(--st-danger);
+  --destructive-foreground: var(--st-danger-foreground);
+  --border: var(--st-border);
+  --input: var(--st-border);
+  --ring: var(--st-focus-ring);
+  --radius: var(--st-radius-shell);
+}
+
+/* ─── Dark theme — neutral off-black, never navy ─────────────── */
+[data-theme="dark"] {
+  --st-brand: #ff4d5a;
+  --st-brand-muted: #2b1316;
+  --st-brand-border: #5a2228;
+
+  --st-primary: #ff3a48;
+  --st-primary-foreground: #0d0e10;
+  --st-primary-hover: #ff5c68;
+  --st-primary-active: #e51220;
+  --st-action: #fafaf9;
+  --st-action-foreground: #111315;
+  --st-action-hover: #ffffff;
+  --st-action-active: #e7e7e3;
+  --st-focus-ring: #fafaf9;
+
+  --st-background: #0d0e10;
+  --st-foreground: #ededeb;
+  --st-surface: #15171a;
+  --st-surface-subtle: #111315;
+  --st-surface-raised: #1c1e21;
+  --st-border: #26282b;
+  --st-border-strong: #3a3c3f;
+  --st-muted: #1a1c1f;
+  --st-muted-foreground: #9a9a96;
+
+  --st-success: #34d399;
+  --st-warning: #fbbf24;
+  --st-danger: #f87171;
+  --st-info: #38bdf8;
+
+  --st-status-final: #6ee7b7;
+  --st-status-final-bg: #0a1f1a;
+  --st-status-final-border: #115e4e;
+
+  --st-status-verified: #6ee7b7;
+  --st-status-verified-bg: #0a1f1a;
+  --st-status-verified-border: #115e4e;
+
+  --st-status-pending: #fcd34d;
+  --st-status-pending-bg: #221a07;
+  --st-status-pending-border: #6b4209;
+
+  --st-status-degraded: #fdba74;
+  --st-status-degraded-bg: #21130a;
+  --st-status-degraded-border: #6f2d12;
+
+  --st-status-failed: #fca5a5;
+  --st-status-failed-bg: #220d0d;
+  --st-status-failed-border: #6f1d1d;
+
+  --st-status-expired: #a8a8a4;
+  --st-status-expired-bg: #1a1c1f;
+  --st-status-expired-border: #303236;
+
+  --st-status-erased: #c4b5fd;
+  --st-status-erased-bg: #18112b;
+  --st-status-erased-border: #4b21a6;
+
+  --st-status-exported: #7dd3fc;
+  --st-status-exported-bg: #0a1820;
+  --st-status-exported-border: #075279;
+
+  --st-status-unverified: #a8a8a4;
+  --st-status-unverified-bg: #1a1c1f;
+  --st-status-unverified-border: #303236;
+
+  --st-status-open: #cbd5e1;
+  --st-status-open-bg: #1a1c1f;
+  --st-status-open-border: #303236;
+
+  --st-status-anchored: #67e8f9;
+  --st-status-anchored-bg: #08171c;
+  --st-status-anchored-border: #075279;
+
+  --st-status-sealed: #a5b4fc;
+  --st-status-sealed-bg: #14152a;
+  --st-status-sealed-border: #3730a3;
+
+  --st-status-revoked: #f9a8d4;
+  --st-status-revoked-bg: #2a0a1a;
+  --st-status-revoked-border: #831843;
+
+  --st-status-tampered: #fca5a5;
+  --st-status-tampered-bg: #2a0d0d;
+  --st-status-tampered-border: #7f1d1d;
+
+  --st-regulatory-lgpd: #6ee7b7;
+  --st-regulatory-bacen: #93c5fd;
+  --st-regulatory-susep: #c4b5fd;
+  --st-regulatory-ai-governance: #a5b4fc;
+  --st-regulatory-security: #fca5a5;
+  --st-regulatory-privacy: #67e8f9;
+
+  --st-chart-1: #ededeb;
+  --st-chart-2: #5eead4;
+  --st-chart-3: #fbbf24;
+  --st-chart-4: #93c5fd;
+  --st-chart-5: #c4b5fd;
+  --st-chart-grid: #26282b;
+  --st-chart-axis: #9a9a96;
+  --st-chart-tooltip: #ededeb;
+
+  --st-shadow-xs: 0 1px 0 rgba(0, 0, 0, 0.45);
+  --st-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 1px rgba(0, 0, 0, 0.3);
+  --st-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --st-shadow-overlay: 0 16px 40px rgba(0, 0, 0, 0.7), 0 6px 16px rgba(0, 0, 0, 0.4);
+
+  /* shadcn / Tailwind compatibility aliases (resolve to dark tokens) */
+  --background: var(--st-background);
+  --foreground: var(--st-foreground);
+  --card: var(--st-surface);
+  --card-foreground: var(--st-foreground);
+  --popover: var(--st-surface);
+  --popover-foreground: var(--st-foreground);
+  --primary: var(--st-primary);
+  --primary-foreground: var(--st-primary-foreground);
+  --secondary: var(--st-muted);
+  --secondary-foreground: var(--st-foreground);
+  --muted: var(--st-muted);
+  --muted-foreground: var(--st-muted-foreground);
+  --accent: var(--st-muted);
+  --accent-foreground: var(--st-foreground);
+  --destructive: var(--st-danger);
+  --destructive-foreground: var(--st-danger-foreground);
+  --border: var(--st-border);
+  --input: var(--st-border);
+  --ring: var(--st-focus-ring);
+}
+
+@theme inline {
+  --color-background: var(--st-background);
+  --color-foreground: var(--st-foreground);
+  --color-card: var(--st-surface);
+  --color-card-foreground: var(--st-foreground);
+  --color-popover: var(--st-surface);
+  --color-popover-foreground: var(--st-foreground);
+  --color-primary: var(--st-primary);
+  --color-primary-foreground: var(--st-primary-foreground);
+  --color-secondary: var(--st-muted);
+  --color-secondary-foreground: var(--st-foreground);
+  --color-muted: var(--st-muted);
+  --color-muted-foreground: var(--st-muted-foreground);
+  --color-accent: var(--st-muted);
+  --color-accent-foreground: var(--st-foreground);
+  --color-destructive: var(--st-danger);
+  --color-destructive-foreground: var(--st-danger-foreground);
+  --color-border: var(--st-border);
+  --color-input: var(--st-border);
+  --color-ring: var(--st-focus-ring);
+  --color-chart-1: var(--st-chart-1);
+  --color-chart-2: var(--st-chart-2);
+  --color-chart-3: var(--st-chart-3);
+  --color-chart-4: var(--st-chart-4);
+  --color-chart-5: var(--st-chart-5);
+  --radius-sm: var(--st-radius-control);
+  --radius-md: var(--st-radius-card);
+  --radius-lg: var(--st-radius-shell);
+  --radius-xl: var(--st-radius-shell);
+  --font-sans: var(--st-font-sans);
+  --font-mono: var(--st-font-mono);
+  --font-serif: var(--st-font-counsel-text);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    background: var(--st-background);
+    color: var(--st-foreground);
+    font-family: var(--st-font-sans);
+  }
+}
