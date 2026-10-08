@@ -19,3 +19,43 @@ jobs:
       - run: git diff --exit-code -- design-system/tokens.css design-system/contrast-report.json
       - run: pnpm exec tsc --noEmit
       - run: pnpm build
+      - name: Resolve Chrome
+        run: |
+          set -euo pipefail
+          chrome_bin="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium-browser || command -v chromium || true)"
+          if [ -z "$chrome_bin" ]; then
+            echo "::error::No Chrome/Chromium binary found on runner"
+            exit 1
+          fi
+          echo "CHROME_BIN=$chrome_bin" >> "$GITHUB_ENV"
+          "$chrome_bin" --version
+      - name: Start production server
+        run: |
+          set -euo pipefail
+          pnpm start --hostname 127.0.0.1 --port 3107 > /tmp/eveedence-next.log 2>&1 &
+          echo "NEXT_PID=$!" >> "$GITHUB_ENV"
+          for attempt in $(seq 1 40); do
+            if curl --fail --silent http://127.0.0.1:3107/ >/dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat /tmp/eveedence-next.log
+          echo "::error::Next production server did not become ready"
+          exit 1
+      - name: Browser smoke
+        env:
+          BASE_URL: http://127.0.0.1:3107
+          BROWSER_ARTIFACTS: design-system/browser-artifacts
+        run: node design-system/browser-smoke.mjs
+      - name: Stop production server
+        if: always()
+        run: |
+          if [ -n "${NEXT_PID:-}" ]; then kill "$NEXT_PID" 2>/dev/null || true; fi
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eveedence-v02-browser-evidence
+          path: design-system/browser-artifacts
+          if-no-files-found: warn
