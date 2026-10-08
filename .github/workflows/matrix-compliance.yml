@@ -6,7 +6,7 @@ name: matrix-compliance
 #   2. attestation-check — PR body must carry "Matrix: <sha>#<section-id>"
 #   3. coverage-check    — new public files must appear in .matrix-coverage.yaml
 #
-# Source of truth for the matrix YAML is eveedence/strathon-core. Downstream
+# Source of truth for the matrix YAML is eveedence/core. Downstream
 # public repos fetch it via MATRIX_READ_TOKEN (fine-grained PAT, Contents:read).
 # Honors denylist_scope.exempt_surfaces per DEC-IP-02 (ec6066b).
 
@@ -37,15 +37,15 @@ jobs:
         run: |
           set -euo pipefail
           # Source-of-truth path: .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml
-          # Order of precedence: local checkout > eveedence/strathon-core > eveedence/evdnce.
+          # Order of precedence: local checkout > eveedence/core > eveedence/evdnce.
           # (During Phase 34.2 rebrand, matrix currently lives in eveedence/evdnce; post-W3
-          # it migrates to eveedence/strathon-core. This workflow tolerates both.)
+          # it migrates to eveedence/core. This workflow tolerates both.)
           if [ -f ".planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml" ]; then
             echo "Using local matrix checkout"
             cp .planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml /tmp/matrix.yaml
           else
             fetched=0
-            for src in eveedence/strathon-core eveedence/evdnce; do
+            for src in eveedence/core eveedence/evdnce; do
               echo "Trying source $src via MATRIX_READ_TOKEN..."
               if gh api "repos/$src/contents/.planning/research/IP-BOUNDARY-STRATHON-2026-04-19.yaml" \
                 --jq '.content' 2>/tmp/matrix-fetch-err.txt | base64 -d > /tmp/matrix.yaml 2>/dev/null; then

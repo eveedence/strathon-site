@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+html {
+  min-height: 100%;
+  background: var(--ev-surface-app);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--ev-surface-app);
+  color: var(--ev-text-primary);
+  font-family: var(--ev-font-sans);
+}
