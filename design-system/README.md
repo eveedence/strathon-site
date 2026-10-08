@@ -32,6 +32,14 @@ pnpm start --hostname 127.0.0.1 --port 3107
 | `copy.ts` | Mensagem principal, CTA e texto de privacidade da ficha |
 | `../public/brand/` | Logotipo oficial e fontes Geist locais |
 
+### Documentação canônica de aplicação
+
+- `Posicionamento.md` — categoria comercial/técnica, Cost of Proof, ICPs e jornada comercial.
+- `Site.md` — arquitetura das páginas, ordem da home, ProofTest e claims que precisam ser verdade antes da publicação.
+- `Conteudo.md` — linguagem editorial de LinkedIn/YouTube, pilares, regras visuais e ativos de captura.
+
+Esses três documentos governam a aplicação comercial do Design System. O README governa os fundamentos visuais e técnicos. Em caso de conflito, a decisão mais recente registrada nesses documentos substitui screenshots ou materiais históricos.
+
 Os valores em #CE102C dos screenshots históricos não definem a identidade nova. O logotipo atualizado fornecido usa **#FF0004**. O símbolo anterior foi retirado de todas as aplicações ativas.
 
 ## Regras da marca
