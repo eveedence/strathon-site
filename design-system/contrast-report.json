@@ -99,6 +99,22 @@
     },
     {
       "theme": "light",
+      "foreground": "text-on-inverse",
+      "background": "surface-inverse",
+      "ratio": 16.97,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "foreground": "text-on-inverse-muted",
+      "background": "surface-inverse",
+      "ratio": 7.77,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
       "foreground": "action-on-primary",
       "background": "action-primary",
       "ratio": 17.72,
@@ -126,6 +142,22 @@
       "foreground": "action-on-brand",
       "background": "action-brand-hover",
       "ratio": 7.38,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "foreground": "action-on-inverse",
+      "background": "action-inverse",
+      "ratio": 16.97,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "foreground": "action-on-inverse",
+      "background": "action-inverse-hover",
+      "ratio": 11.99,
       "minimum": 4.5,
       "pass": true
     },
@@ -171,9 +203,25 @@
     },
     {
       "theme": "light",
+      "foreground": "border-on-inverse",
+      "background": "surface-inverse",
+      "ratio": 4,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
       "foreground": "focus",
       "background": "surface-card",
       "ratio": 17.72,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "theme": "light",
+      "foreground": "focus-inverse",
+      "background": "surface-inverse",
+      "ratio": 16.97,
       "minimum": 3,
       "pass": true
     },
@@ -307,6 +355,22 @@
     },
     {
       "theme": "dark",
+      "foreground": "text-on-inverse",
+      "background": "surface-inverse",
+      "ratio": 19.06,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "foreground": "text-on-inverse-muted",
+      "background": "surface-inverse",
+      "ratio": 8.73,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
       "foreground": "action-on-primary",
       "background": "action-primary",
       "ratio": 16.97,
@@ -339,9 +403,25 @@
     },
     {
       "theme": "dark",
+      "foreground": "action-on-inverse",
+      "background": "action-inverse",
+      "ratio": 16.97,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "foreground": "action-on-inverse",
+      "background": "action-inverse-hover",
+      "ratio": 11.99,
+      "minimum": 4.5,
+      "pass": true
+    },
+    {
+      "theme": "dark",
       "foreground": "link",
       "background": "surface-app",
-      "ratio": 8.58,
+      "ratio": 12.59,
       "minimum": 4.5,
       "pass": true
     },
@@ -349,7 +429,7 @@
       "theme": "dark",
       "foreground": "link",
       "background": "surface-card",
-      "ratio": 7.75,
+      "ratio": 11.38,
       "minimum": 4.5,
       "pass": true
     },
@@ -357,7 +437,7 @@
       "theme": "dark",
       "foreground": "border-control",
       "background": "surface-card",
-      "ratio": 4.56,
+      "ratio": 3.76,
       "minimum": 3,
       "pass": true
     },
@@ -365,7 +445,7 @@
       "theme": "dark",
       "foreground": "border-control",
       "background": "surface-app",
-      "ratio": 5.04,
+      "ratio": 4.16,
       "minimum": 3,
       "pass": true
     },
@@ -373,7 +453,15 @@
       "theme": "dark",
       "foreground": "border-control",
       "background": "surface-sunken",
-      "ratio": 5.21,
+      "ratio": 4.29,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "foreground": "border-on-inverse",
+      "background": "surface-inverse",
+      "ratio": 4.5,
       "minimum": 3,
       "pass": true
     },
@@ -382,6 +470,14 @@
       "foreground": "focus",
       "background": "surface-card",
       "ratio": 15.93,
+      "minimum": 3,
+      "pass": true
+    },
+    {
+      "theme": "dark",
+      "foreground": "focus-inverse",
+      "background": "surface-inverse",
+      "ratio": 19.06,
       "minimum": 3,
       "pass": true
     },

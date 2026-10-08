@@ -1,7 +1,6 @@
-# Eveedence Design System v0.2 — proposta
+# Eveedence Design System v0.2 RC
 
-Atualização local preparada em 2026-10-08 a partir do logotipo oficial atualizado e das capturas fornecidas pelo usuário. O export do artefato anterior não estava disponível. Esta é uma reconstrução editável dos fundamentos e componentes visíveis, não uma reprodução de todos os 22 componentes originais.
-
+**Status:** release candidate (`0.2.0-rc.1`). Freeze only after CI and browser verification pass on the PR heads.\n\nEsta RC é wordmark-only e alinha o sistema a **Evidence Operations** comercialmente e **Provability Infrastructure** tecnicamente. O freeze do Design System não altera readiness do produto nem gates de publicação do evdnce.\n
 ## Abrir
 
 Na raiz do projeto:
@@ -27,7 +26,12 @@ pnpm start --hostname 127.0.0.1 --port 3107
 | `tokens.css` | Gerado; não editar à mão |
 | `contrast-report.json` | Resultado da checagem de tokens; não é auditoria WCAG completa |
 | `eveedence.css` | Tipografia, layout e estilos dos componentes |
-| `components.tsx` | Brand, Button, StateBadge, Tag, SearchField, SiteHeader, CaseThread, Hero, QATable, ProofTeaser, SiteFooter e ProofTest |
+| `components/base.tsx` | Brand, controles, metadata e estados com dimensão explícita |
+| `components/product.tsx` | EvidenceRow, SidebarNav e exemplos de produto |
+| `components/site.tsx` | Componentes reutilizáveis e composição das páginas |
+| `components/site-content.ts` | Conteúdo estruturado dos exemplos e soluções |
+| `components/proof-test.tsx` | Teste do Custo da Prova |
+| `components.tsx` | Re-export de compatibilidade; código novo usa módulos estreitos |
 | `guide.tsx` | Catálogo visual e seletor de tema |
 | `copy.ts` | Mensagem principal, CTA e texto de privacidade da ficha |
 | `../public/brand/` | Logotipo oficial e fontes Geist locais |
@@ -52,11 +56,11 @@ Os valores em #CE102C dos screenshots históricos não definem a identidade nova
 - O símbolo foi removido do catálogo, componentes e favicon; seu arquivo anterior permanece apenas no backup histórico.
 - O logo não é sinal de integridade, completude ou verificação.
 - Geist Sans permanece; Geist Mono é usada em identificadores, horários, tokens e metadados.
-- A forma dos componentes acompanha a marca com curvas moderadas: controle 10 px, card 18 px, shell 28 px. São propostas novas.
+- Raios candidatos da v0.2: controle 8 px, card 12 px e shell 16 px; pill fica restrito a estados e chips.
 - Fontes reaproveitadas do cache compilado do site: Geist Latin variável e Geist Mono Latin variável. Não há pedido externo de fonte em runtime.
 - A tagline antiga não foi incorporada.
 
-## Cor e acessibilidade
+## Arquitetura de tokens\n\nContrato da RC: `primitives → semantics → components`. Valores literais existem apenas em primitives; semantics apontam para primitives; componentes consomem apenas CSS variables semânticas. O gerador falha se encontrar hex hardcoded em `eveedence.css`.\n\n## Cor e acessibilidade
 
 - Identidade: #FF0004. Contraste contra branco ~4:1; inadequado para texto pequeno branco/vermelho.
 - Ação de marca: #CE0004, com texto branco; hover #B00003.
@@ -99,4 +103,13 @@ Os arquivos anteriores de home, layout e guia foram preservados em `../.backup/b
 
 ## API React
 
-O arquivo index.ts exporta os componentes individualmente e o namespace Eveedence (incluindo copy e tokens). Importe os estilos eveedence.css uma vez no layout e disponibilize os ativos de public/brand no mesmo caminho. A API reconstruída cobre os componentes listados; não promete compatibilidade integral com o bundle anterior.
+O arquivo index.ts exporta os componentes individualmente e o namespace Eveedence (incluindo copy e tokens). Importe os estilos eveedence.css uma vez no layout e disponibilize os ativos de public/brand no mesmo caminho. A API de compatibilidade continua em `components.tsx`, mas novas páginas importam módulos específicos. A RC também reincorpora `EvidenceRow`, `SidebarNav`, `MetadataList`/`MetadataItem` e `EvidenceStateBadge`.
+
+## Rotas candidatas construídas com o kit
+
+- `/solucoes/incident-evidence`
+- `/solucoes/decision-evidence`
+- `/solucoes/assurance-evidence`
+- `/assurance`
+
+`/design-system` permanece catálogo de desenvolvimento e deve ficar `noindex`; não aparece no footer público.
